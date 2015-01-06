@@ -1,5 +1,5 @@
 
-function [next_nn, cost_v] = backprop(nn, rate, x, y)
+function [delta_weights, delta_bias, cost_v] = backprop(nn, rate, x, y)
 	l = size(nn.activations)(2);
 
 	% forward
@@ -15,14 +15,10 @@ function [next_nn, cost_v] = backprop(nn, rate, x, y)
 		j = l - i;
 
 		cost{j} = cost{j+1} * transpose(nn.weights{j});
-		d_bias = nn.sigmod_prime(cost{j + 1});
-		d_weight = transpose(nn.activations{j}) * nn.sigmod_prime(cost{j + 1});
-
-		nn.weights{j} = nn.weights{j} - (d_weight .* rate);
-		nn.bias{j} = nn.bias{j} - (d_bias .* rate);
+		delta_bias{j} = nn.sigmod_prime(cost{j + 1});
+		delta_weights{j} = transpose(nn.activations{j}) * nn.sigmod_prime(cost{j + 1});
 	end
 
-	next_nn = nn;
 	cost_v = cost{l};
 end
 
