@@ -1,5 +1,5 @@
 
-function [next_nn, cost] = backprop(nn, rate, x, y)
+function [next_nn, cost_v] = backprop(nn, rate, x, y)
 	l = size(nn.activations)(2);
 
 	% forward
@@ -23,6 +23,7 @@ function [next_nn, cost] = backprop(nn, rate, x, y)
 	end
 
 	next_nn = nn;
+	cost_v = cost{l};
 end
 
 function r = cost_func(y, a)
