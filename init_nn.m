@@ -1,6 +1,6 @@
 
 function nn = init_nn(layers)
-	l = size(layers)(2);
+	l = length(layers);
 
 	for i = 1:(l-1)
 		nn.activations{i} = zeros(1, layers(i));
@@ -15,9 +15,9 @@ function nn = init_nn(layers)
 end
 
 function output = sigmod(input)
-	output = 1 ./ (1 .+ e .^ input);
+	output = 1 ./ (1 + exp(1) .^ (-input));
 end
 
 function output = sigmod_prime(input)
-	output = sigmod(input) .* (1 .- sigmod(input));
+	output = sigmod(input) .* (1 - sigmod(input));
 end
