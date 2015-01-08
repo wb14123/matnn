@@ -1,36 +1,52 @@
 
 function [next_nn] = train_nn(nn, rate, xs, ys)
 
-    figure(1);
-    lHandle = line(nan, nan);
+    cost = [];
     
     for i = 1:100
-        [nn, cost] = single_epoch(nn, 10, rate, xs, ys);
+        [next_nn, c] = single_epoch(nn, 1000, rate, xs, ys);
+        nn = next_nn;
         
-        X = get(lHandle, 'XData');
-        Y = get(lHandle, 'YData');
-        set(lHandle, 'XData', [X i], 'YData', [Y sum(cost)]);
+        display(c);
+        cost = [cost c];
+        
+        
+        plot(transpose(cost));
         drawnow;
     end
    
     next_nn = nn;
 end
 
-function [next_nn, cost] = single_epoch(nn, batch_size, rate, xs, ys)
+function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
     l = length(xs);
     n = fix(l / batch_size);
     
+    index = randperm(l);
+    xs = xs(index, :);
+    ys = ys(index, :);
+    
 
+    c = zeros(1, n);
 
     for i = 1:n
         weights = nn.weights;
         bias = nn.bias;
         for j = 0:(batch_size-1)
-            [delta_weights, delta_bias, cost] = backprop(nn, rate, xs(i+j, :), ys(i+j, :));
+            pos = (i-1) * batch_size + j + 1;
+            [delta_weights, delta_bias, cost] = backprop(nn, rate, xs(pos, :), ys(pos, :));
+            
+            % display(delta_weights{2});
+            % display(delta_bias{2});
+            
             weights = sub_cell(weights, delta_weights, batch_size);
             bias = sub_cell(bias, delta_bias, batch_size);
+            
+            c(i) = c(i) + sum(cost);
         end
         
+        c(i) = c(i) / batch_size;
+                
         nn.weights = weights;
         nn.bias = bias;
     end
