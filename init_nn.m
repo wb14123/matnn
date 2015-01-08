@@ -4,8 +4,8 @@ function nn = init_nn(layers)
 
 	for i = 1:(l-1)
 		nn.activations{i} = zeros(1, layers(i));
-		nn.weights{i} = randn(layers(i), layers(i+1));
-		nn.bias{i} = randn(1, layers(i+1));
+		nn.weights{i} = rand(layers(i), layers(i+1));
+		nn.bias{i} = rand(1, layers(i+1));
 	end
 
 	nn.activations{l} = zeros(1, layers(l));
