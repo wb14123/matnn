@@ -1,6 +1,9 @@
 
 function [delta_weights, delta_bias, cost_v] = backprop(nn, rate, x, y)
 	l = length(nn.activations);
+    
+    x = x / norm(x);
+   
 
 	% forward
     nn.zs = cell(l);
@@ -25,7 +28,7 @@ function [delta_weights, delta_bias, cost_v] = backprop(nn, rate, x, y)
 		delta_weights{j} = transpose(nn.activations{j}) * cost{j+1} * rate;
 	end
 
-	cost_v = cost{l} .^ 2;
+	cost_v = (nn.activations{l} - y) .^ 2;
 end
 
 
