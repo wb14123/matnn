@@ -24,7 +24,7 @@ function [train_x, train_y, t10k_x, t10k_y] = read_mnist(mnist_dir)
 	t10k_y_inner = fread(t10k_label_f, [t10k_l 1]);
 	t10k_y = zeros(t10k_l, 10);
 	for n = 1:t10k_l
-		train_y(n, cast(t10k_y_inner(n) + 1, 'int16')) = 1;
+		t10k_y(n, cast(t10k_y_inner(n) + 1, 'int16')) = 1;
 	end
 
 	fclose(train_image_f);
