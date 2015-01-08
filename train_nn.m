@@ -8,7 +8,7 @@ function [next_nn] = train_nn(nn, rate, xs, ys)
         nn = next_nn;
         
         display(c);
-        cost = [cost c];
+        cost = [cost mean(c)];
         
         
         plot(transpose(cost));
