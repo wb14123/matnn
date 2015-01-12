@@ -26,11 +26,11 @@ function [next_nn] = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
         title('pers');
         
         subplot(2, 2, 3);
-        hist(cell2mat(cellfun(@(x)x(:),nn.weights(:),'un',0)))
+        hist(cell2mat(cellfun(@(x)x(:),nn.weights(:),'un',0)));
         title('weights');
         
         subplot(2, 2, 4);
-        hist(cell2mat(nn.bias));
+        hist(cell2mat(cellfun(@(x)x(:),nn.bias(:),'un',0)))
         title('bias');
        
         
