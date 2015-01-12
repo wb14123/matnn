@@ -1,35 +1,43 @@
 
-function [next_nn] = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
+function next_nn = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
     cost = [];
     pers = [];
+    test_pers = [];
 
-    train_xs = train_xs / 255 - 0.5;
-    test_xs = test_xs / 255 - 0.5;
-    
+    train_xs = train_xs / 255;
+    test_xs = test_xs / 255;
+
     figure;
 
-    for i = 1:100
+    for i = 1:1000
         [next_nn, c] = single_epoch(nn, 1000, rate, train_xs, train_ys);
         nn = next_nn;
-        cost = [cost mean(c)];
-        display(cost);
+        cost = [cost ; c];
 
-        pers = [pers validate_nn(nn, test_xs, test_ys)];
-        display(pers);
-        
-        subplot(2, 2, 1);
+        % if (i > 1 && abs(cost(i-1) - cost(i)) < 0.01)
+        %     break
+        % end
+
+        pers = [pers validate_nn(nn, train_xs, train_ys)];
+        test_pers = [test_pers validate_nn(nn, test_xs, test_ys)];
+
+        subplot(2, 3, 1);
         plot(cost);
         title('cost');
-        
-        subplot(2, 2, 2);
+
+        subplot(2, 3, 2);
         plot(pers);
         title('pers');
+
+        subplot(2, 3, 3)
+        plot(test_pers);
+        title('test pers');
         
-        subplot(2, 2, 3);
+        subplot(2, 3, 4);
         hist(cell2mat(cellfun(@(x)x(:),nn.weights(:),'un',0)));
         title('weights');
         
-        subplot(2, 2, 4);
+        subplot(2, 3, 5);
         hist(cell2mat(cellfun(@(x)x(:),nn.bias(:),'un',0)))
         title('bias');
        
@@ -48,7 +56,7 @@ function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
     xs = xs(index, :);
     ys = ys(index, :);
 
-    c = zeros(1, n);
+    c = zeros(1, length(ys(1, :)));
 
     for i = 1:n
         weights = nn.weights;
@@ -58,10 +66,10 @@ function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
             [delta_weights, delta_bias, cost] = backprop(nn, rate, xs(pos, :), ys(pos, :));
             weights = sub_cell(weights, delta_weights, batch_size);
             bias = sub_cell(bias, delta_bias, batch_size);
-            c(i) = c(i) + sum(cost);
+            c = c + cost;
         end
 
-        c(i) = c(i) / batch_size;
+        c = c / batch_size;
         nn.weights = weights;
         nn.bias = bias;
     end
