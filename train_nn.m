@@ -1,13 +1,39 @@
 
-function [next_nn] = train_nn(nn, rate, xs, ys)
+function [next_nn] = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
     cost = [];
+    pers = [];
+
+    train_xs = train_xs / 255 - 0.5;
+    test_xs = test_xs / 255 - 0.5;
+    
+    figure;
 
     for i = 1:100
-        [next_nn, c] = single_epoch(nn, 1000, rate, xs, ys);
+        [next_nn, c] = single_epoch(nn, 1000, rate, train_xs, train_ys);
         nn = next_nn;
-        display(c);
         cost = [cost mean(c)];
-        plot(transpose(cost));
+        display(cost);
+
+        pers = [pers validate_nn(nn, test_xs, test_ys)];
+        display(pers);
+        
+        subplot(2, 2, 1);
+        plot(cost);
+        title('cost');
+        
+        subplot(2, 2, 2);
+        plot(pers);
+        title('pers');
+        
+        subplot(2, 2, 3);
+        hist(cell2mat(cellfun(@(x)x(:),nn.weights(:),'un',0)))
+        title('weights');
+        
+        subplot(2, 2, 4);
+        hist(cell2mat(nn.bias));
+        title('bias');
+       
+        
         drawnow;
     end
 
