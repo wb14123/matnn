@@ -8,8 +8,8 @@ function [delta_weights, delta_bias, cost_v] = backprop(nn, rate, x, y)
     % backprop
     cost{l} = (nn.activations{l} - y);
 
-    delta_bias = cell(l-1);
-    delta_weights = cell(l-1);
+    delta_bias = cell(1, l-1);
+    delta_weights = cell(1, l-1);
 
     for i = 1:(l-1)
         j = l - i;

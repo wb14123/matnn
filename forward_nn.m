@@ -2,7 +2,7 @@
 function next_nn = forward_nn(nn, x)
     l = length(nn.activations);
 
-    nn.zs = cell(l);
+    nn.zs = cell(1, l);
     nn.activations{1} = x;
     nn.zs{1} = x;
     for i = 2:l

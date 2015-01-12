@@ -15,7 +15,7 @@ function nn = init_nn(layers)
 end
 
 function output = sigmod(input)
-    output = 1 ./ (1 + exp(1) .^ (-input));
+    output = 1 ./ (1 + exp(-input));
 end
 
 function output = sigmod_prime(input)

@@ -69,7 +69,7 @@ function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
 end
 
 function r = sub_cell(c1, c2, batch_size)
-    r = cell(length(c1));
+    r = cell(1, length(c1));
     for i = 1:length(c1)
         r{i} = c1{i} - c2{i} / batch_size;
     end
