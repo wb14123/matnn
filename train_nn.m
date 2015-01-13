@@ -68,11 +68,10 @@ function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
             bias = sub_cell(bias, delta_bias, batch_size);
             c = c + cost;
         end
-
-        c = c / batch_size;
         nn.weights = weights;
         nn.bias = bias;
     end
+    c = c / l;
     next_nn = nn;
 end
 
