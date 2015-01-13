@@ -1,6 +1,8 @@
 
 function next_nn = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
-    cost = [];
+    cost_avg = [];
+    cost_std = [];
+
     pers = [];
     test_pers = [];
 
@@ -10,9 +12,11 @@ function next_nn = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
     figure;
 
     for i = 1:1000
-        [next_nn, c] = single_epoch(nn, 1000, rate, train_xs, train_ys);
+        [next_nn, c_avg, c_std] = single_epoch(nn, 10, rate, train_xs, train_ys);
         nn = next_nn;
-        cost = [cost ; c];
+
+        cost_avg = [cost_avg ; c_avg];
+        cost_std = [cost_std ; c_std];
 
         % if (i > 1 && abs(cost(i-1) - cost(i)) < 0.01)
         %     break
@@ -22,22 +26,26 @@ function next_nn = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
         test_pers = [test_pers validate_nn(nn, test_xs, test_ys)];
 
         subplot(2, 3, 1);
-        plot(cost);
-        title('cost');
+        plot(cost_avg);
+        title('cost avg');
 
         subplot(2, 3, 2);
+        plot(cost_std);
+        title('cost std');
+
+        subplot(2, 3, 3);
         plot(pers);
         title('pers');
 
-        subplot(2, 3, 3)
+        subplot(2, 3, 4)
         plot(test_pers);
         title('test pers');
         
-        subplot(2, 3, 4);
+        subplot(2, 3, 5);
         hist(cell2mat(cellfun(@(x)x(:),nn.weights(:),'un',0)));
         title('weights');
         
-        subplot(2, 3, 5);
+        subplot(2, 3, 6);
         hist(cell2mat(cellfun(@(x)x(:),nn.bias(:),'un',0)))
         title('bias');
        
@@ -48,7 +56,7 @@ function next_nn = train_nn(nn, rate, train_xs, train_ys, test_xs, test_ys)
     next_nn = nn;
 end
 
-function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
+function [next_nn, c_avg, c_std] = single_epoch(nn, batch_size, rate, xs, ys)
     l = length(xs);
     n = fix(l / batch_size);
 
@@ -56,7 +64,7 @@ function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
     xs = xs(index, :);
     ys = ys(index, :);
 
-    c = zeros(1, length(ys(1, :)));
+    c = [];
 
     for i = 1:n
         weights = nn.weights;
@@ -66,12 +74,13 @@ function [next_nn, c] = single_epoch(nn, batch_size, rate, xs, ys)
             [delta_weights, delta_bias, cost] = backprop(nn, rate, xs(pos, :), ys(pos, :));
             weights = sub_cell(weights, delta_weights, batch_size);
             bias = sub_cell(bias, delta_bias, batch_size);
-            c = c + cost;
+            c = [c ; cost];
         end
         nn.weights = weights;
         nn.bias = bias;
     end
-    c = c / l;
+    c_avg = mean(c);
+    c_std = std(c);
     next_nn = nn;
 end
 
